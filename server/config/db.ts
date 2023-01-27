@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import {MONGO} from './url'
+import {MONGO} from './default'
 
 async function connect(){
     try {
