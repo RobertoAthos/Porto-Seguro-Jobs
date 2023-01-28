@@ -6,7 +6,8 @@ const UsersSchema = new mongoose.Schema({
     email: String,
     tel: String,
     location: String,
-    password: String
+    password: String,
+    pic: String
 })
 
 export default mongoose.model('users',UsersSchema)

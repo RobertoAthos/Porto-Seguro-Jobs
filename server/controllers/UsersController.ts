@@ -6,14 +6,15 @@ import { SECRET_KEY } from '../config/default'
 
 export async function createUser(req:Request,res:Response){
       try {
-        const {fullName,email,tel,location,password} = req.body
+        const {fullName,email,tel,location,password, pic} = req.body
 
         const newUser = new user({
             fullName,
             email,
             tel,
             location,
-            password: bcrypt.hashSync(password, 10)
+            password: bcrypt.hashSync(password, 10),
+            pic
         })
 
         if(fullName === '' && email === '' && password ===''){
@@ -26,6 +27,26 @@ export async function createUser(req:Request,res:Response){
       } catch (error) {
         res.status(400).send(error)
       }
+}
+
+export async function UpdateUser(req:Request,res:Response){
+    try {
+      const {id} = req.params
+      const {fullName,email,tel,location,password, pic} = req.body
+      const User = await  user.findById(id)
+      if(!User) res.status(404).send('User do not exist')
+      const updateUser = await user.findByIdAndUpdate({_id:id},{
+        fullName,
+        email,
+        tel,
+        location,
+        password,
+        pic,
+      })
+      res.status(200).json(updateUser)
+    } catch (error:any) {
+      res.status(400).json({message: error.message})
+    }
 }
 
 export async function Login(req:Request,res:Response){

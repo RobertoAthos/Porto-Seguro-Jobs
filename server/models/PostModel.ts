@@ -2,10 +2,11 @@ import mongoose from "mongoose";
 
 
 const PostsSchema = new mongoose.Schema({
-    title: {String, required:true},
-    desc: {String, required:true},
+    title: String,
+    desc: String,
     location: String,
-    img: String
+    img: String,
+    userPic: String
 })
 
 export default mongoose.model('posts', PostsSchema)
