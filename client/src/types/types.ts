@@ -32,3 +32,16 @@ export interface AnimateProps {
     durationIn?: number;
     durationOut?: number;
   }
+
+export interface RegisterValues {
+    fullName: string;
+    email: string;
+    tel: string;
+    location: string;
+    password: string;
+    pic: string;
+  }
+export interface LoginValues {
+    email:string,
+    password:string
+}

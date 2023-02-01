@@ -1,52 +1,60 @@
-import { useAuth } from "@/context/AuthProvider/useAuth";
 import React, { useState } from "react";
 import {ToastContainer,toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import Loader from "./Loader";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/router";
+import axios from "axios";
+import {setRegister} from '../state'
 
 export default function SignUpForm() {
-  const auth = useAuth();
+
   const [isLoading, setIsLoading] = useState(false);
+  const[fullName,setFullName]=useState('')
+  const[email,setEmail] = useState('')
+  const[tel,setTel]=useState('')
+  const[location,setLocation]=useState('')
+  const[pic,setPic]=useState('')
+  const[password,setPassword]=useState('')
+  const dispatch = useDispatch()
+  const router = useRouter()
 
-  const initialState = {
-    fullName: "",
-    email: "",
-    tel: "",
-    location: "",
-    password: "",
-    pic: "",
-  };
-
-  const [formValues, setFormValues] = useState(initialState);
-
-  const { fullName, email, location, password, pic, tel } = formValues;
-
-  const handleChange = (e: any) => {
-    setFormValues({ ...formValues, [e.target.name]: e.target.value });
-  };
-
-  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsLoading(true)
     try {
-      await auth.register(fullName, email, tel, location, password, pic);
-      setIsLoading(false);
+      const registerResponse = await axios.post('http://localhost:5000/api/createUser',{
+        fullName,
+        email,
+        tel,
+        location,
+        password,
+        pic
+      })
+      const registered = await registerResponse.data
+      dispatch(setRegister(registered))
+      setIsLoading(false)
+      console.log(registered)
       toast.success('Cadastro realizado com sucesso!', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
-        pauseOnHover: false,
+        pauseOnHover: true,
         draggable: true,
         progress: undefined,
         theme: "light",
         });
     } catch (error) {
       console.log(error)
+      setIsLoading(false)
     }
-  };
+  }
+
+
 
   return (
-    <form className="flex flex-col " onSubmit={handleRegister}>
+    <form className="flex flex-col" onSubmit={handleSubmit}>
       <label className="text-white font-bold text-xl mb-[10px] mt-[20px]">
         Nome
       </label>
@@ -55,7 +63,7 @@ export default function SignUpForm() {
         placeholder="digite seu nome completo"
         className="w-[450px] outline-none p-2 rounded-sm text-xl text-gray-700"
         name="fullName"
-        onChange={handleChange}
+        onChange={e=>setFullName(e.target.value)}
         value={fullName}
       />
       <label className="text-white font-bold text-xl mb-[10px] mt-[20px]">
@@ -66,7 +74,7 @@ export default function SignUpForm() {
         placeholder="digite um email válido"
         className="w-[450px] outline-none p-2 rounded-sm text-xl text-gray-700"
         name="email"
-        onChange={handleChange}
+        onChange={e=>setEmail(e.target.value)}
         value={email}
       />
       <label className="text-white font-bold text-xl mb-[10px] mt-[20px]">
@@ -77,7 +85,7 @@ export default function SignUpForm() {
         placeholder="coloque seu telefone whatsappp"
         className="w-[450px] outline-none p-2 rounded-sm text-xl text-gray-700"
         name="tel"
-        onChange={handleChange}
+        onChange={e=>setTel(e.target.value)}
         value={tel}
       />
       <label className="text-white font-bold text-xl mb-[10px] mt-[20px]">
@@ -88,7 +96,7 @@ export default function SignUpForm() {
         placeholder="Digite em qual região você mora, ex: Porto Seguro, Trancoso..."
         className="w-[450px] outline-none p-2 rounded-sm text-xl text-gray-700"
         name="location"
-        onChange={handleChange}
+        onChange={e=>setLocation(e.target.value)}
         value={location}
       />
       <label className="text-white font-bold text-xl mb-[10px] mt-[20px]">
@@ -99,7 +107,7 @@ export default function SignUpForm() {
         placeholder="digite uma senha forte"
         className="w-[450px] outline-none p-2 rounded-sm text-xl text-gray-700"
         name="password"
-        onChange={handleChange}
+        onChange={e=>setPassword(e.target.value)}
         value={password}
       />
       <label className="text-white font-bold text-xl mb-[10px] mt-[20px]">
@@ -109,15 +117,19 @@ export default function SignUpForm() {
         type="file"
         className="text-white mb-[20px]"
         name="pic"
-        onChange={handleChange}
+        onChange={e=>setPic(e.target.value)}
         value={pic}
       />
-        <button
+        {isLoading ? (
+          <Loader/>
+        ) : (
+          <button
           type="submit"
           className="bg-primary-700 hover:bg-primary-800 p-2 text-white font-bold"
         >
           CRIAR CONTA
         </button>
+        )}
         <ToastContainer/>
     </form>
   );
